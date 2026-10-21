@@ -267,3 +267,11 @@ svg.pr.shake { animation: shake .3s; }
 .showcard .sjp { font-size: clamp(30px, 9vw, 54px); font-weight: 600; line-height: 1.3; } .showcard .sen { font-size: 18px; color: #555; }
 .phrase .say .jp { font-size: 20px; }
 .showcard .sjp { text-wrap: balance; font-size: clamp(26px, 7.5vw, 46px); word-break: keep-all; overflow-wrap: anywhere; }
+
+/* translator */
+.top #tr { padding: 5px 10px; margin-right: 8px; font-size: 16px; }
+.trrow { display: flex; justify-content: space-between; align-items: center; margin: 2px 2px 8px; color: var(--muted); }
+.trout { background: var(--panel); border: 2px solid var(--accent2); border-radius: 18px; padding: 16px; margin: 12px 0; text-align: center; }
+.trout .trja { font-size: 28px; line-height: 1.35; margin-bottom: 4px; cursor: pointer; }
+.trout .trsrc { color: var(--muted); margin: 6px 0 10px; }
+.trout .btnrow { justify-content: center; padding: 6px 0; }

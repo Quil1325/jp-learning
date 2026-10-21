@@ -36,7 +36,8 @@
       const byUnit = unitIds.map(u => [u, items.filter(p => p.u === u)]).filter(([, a]) => a.length);
       $('#pbl').innerHTML = byUnit.length ? byUnit.map(([u, a]) => `<h2>${esc(SHORT[u])}</h2><ul class="phrases">${a.map(p => `<li class="phrase">
         <button class="say" data-say="${esc(p.kana)}"><span class="jp">${esc(p.jp)}</span><span class="rom">${esc(p.rom)}</span><span class="en">${esc(p.en)}</span></button>
-        <div class="side"><button class="star" data-show="${esc(p.id)}" aria-label="Show to staff" title="Show to staff">📣</button><button class="star ${pbFav.has(p.id) ? 'on' : ''}" data-f="${esc(p.id)}" aria-label="Save">★</button></div></li>`).join('')}</ul>`).join('') : `<p class="empty-msg">${st.pb === 'Saved' ? 'Tap ★ on a phrase to save it here.' : 'No matches.'}</p>`;
+        <div class="side"><button class="star" data-show="${esc(p.id)}" aria-label="Show to staff" title="Show to staff">📣</button><button class="star ${pbFav.has(p.id) ? 'on' : ''}" data-f="${esc(p.id)}" aria-label="Save">★</button></div></li>`).join('')}</ul>`).join('') : `<p class="empty-msg">${st.pb === 'Saved' ? 'Tap ★ on a phrase to save it here.' : 'No matches.'}</p>${st.pb !== 'Saved' && st.q.trim() ? `<button class="big-btn center" id="totr">🌐 Translate “${esc(st.q.trim())}”</button>` : ''}`;
+      const t = $('#totr'); if (t) t.onclick = () => NH.openTranslator(st.q.trim());
     };
     draw();
     $('#search').oninput = e => { st.q = e.target.value; draw(); };
@@ -50,11 +51,11 @@
   NH.views.show = {
     full: true, title: 'Show to staff',
     render(el, a) {
-      const p = NH.items[a.id];
+      const p = a.id ? NH.items[a.id] : { jp: a.jp, en: a.en, kana: a.say || a.jp };
       el.innerHTML = `<div class="showcard"><div class="sjp">${esc(p.jp)}</div><div class="sen">${esc(p.en)}</div></div>
         <button class="big-btn center" id="say">▶ Say it aloud</button>
         <p class="hint center">Turn the phone around to show the staff member.</p>`;
-      $('#say').onclick = () => NH.speak(p.kana);
+      $('#say').onclick = () => NH.speak(p.kana || p.jp);
     },
   };
 

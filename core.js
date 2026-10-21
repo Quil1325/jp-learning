@@ -192,6 +192,7 @@
   NH.boot = () => {
     $('.tabs').onclick = e => { const b = e.target.closest('button'); if (b) NH.setTab(b.dataset.tab); };
     $('#back').onclick = NH.back;
+    $('#tr').onclick = () => NH.openTranslator();
     const sp = $('#speed');
     const sync = () => { sp.textContent = NH.profile.slow ? '🐢 Slow' : 'Normal'; sp.classList.toggle('on', NH.profile.slow); };
     sp.onclick = () => { NH.profile.slow = !NH.profile.slow; NH.saveProfile(); sync(); };
