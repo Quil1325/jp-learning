@@ -1,0 +1,93 @@
+// Curriculum structure + kana mnemonics.
+window.NH_LEVELS = [
+  { n: 0, name: 'Foundations', jlpt: 'Sounds & Kana', blurb: 'Hiragana, katakana and the sounds of Japanese. Everything else is built on these.' },
+  { n: 1, name: 'Starter', jlpt: '≈ JLPT N5', blurb: 'Introduce yourself, ask simple questions, basic sentences, first kanji.' },
+  { n: 2, name: 'Anime-ready', jlpt: '≈ JLPT N4', blurb: 'Casual speech, commands, feelings, school and battle talk. Start understanding scenes.' },
+  { n: 3, name: 'Intermediate', jlpt: '≈ JLPT N3', blurb: 'Story vocabulary, passive/causative, conditionals, explaining motives.' },
+  { n: 4, name: 'Advanced', jlpt: '≈ JLPT N2–N1', blurb: 'Keigo, villain & samurai speech, archaic forms, nuance.' },
+];
+
+// Units in teaching order. Kana units (h1-h5, k1-k5) are filled automatically.
+window.NH_UNITS = [
+  { id: 'h1', lv: 0, title: 'Hiragana 1 · あ か さ', blurb: 'Vowels, K, S' },
+  { id: 'h2', lv: 0, title: 'Hiragana 2 · た な は', blurb: 'T, N, H' },
+  { id: 'h3', lv: 0, title: 'Hiragana 3 · ま や ら わ ん', blurb: 'M, Y, R, W, N' },
+  { id: 'h4', lv: 0, title: 'Hiragana 4 · が ざ だ ば ぱ', blurb: 'Voiced sounds ゛ ゜' },
+  { id: 'h5', lv: 0, title: 'Hiragana 5 · きゃ しゅ ちょ', blurb: 'Combo sounds' },
+  { id: 'k1', lv: 0, title: 'Katakana 1 · ア カ サ', blurb: 'Vowels, K, S' },
+  { id: 'k2', lv: 0, title: 'Katakana 2 · タ ナ ハ', blurb: 'T, N, H' },
+  { id: 'k3', lv: 0, title: 'Katakana 3 · マ ヤ ラ ワ ン', blurb: 'M, Y, R, W, N' },
+  { id: 'k4', lv: 0, title: 'Katakana 4 · ガ ザ ダ バ パ', blurb: 'Voiced sounds' },
+  { id: 'k5', lv: 0, title: 'Katakana 5 · キャ シュ チョ', blurb: 'Combo sounds' },
+
+  { id: 'l1-intro', lv: 1, title: 'Hello & who am I', blurb: 'Greetings · です · は · か' },
+  { id: 'l1-people', lv: 1, title: 'People & family', blurb: 'の · も · と · first kanji' },
+  { id: 'l1-num', lv: 1, title: 'Numbers, money & days', blurb: 'Counting · kanji 一〜万' },
+  { id: 'l1-things', lv: 1, title: 'Things, places & food', blurb: 'これ/それ/あれ · を · に/で' },
+  { id: 'l1-verbs', lv: 1, title: 'Everyday actions', blurb: 'ます · あります/います · てください' },
+  { id: 'l1-adj', lv: 1, title: 'Describing things', blurb: 'い/な adjectives · たい' },
+
+  { id: 'l2-speech', lv: 2, title: 'How anime really talks', blurb: 'Plain form · pronouns · ending particles' },
+  { id: 'l2-battle', lv: 2, title: 'Battle talk', blurb: 'Commands · let\'s · can · ている' },
+  { id: 'l2-feel', lv: 2, title: 'Feelings & friendship', blurb: 'たら · なきゃ · ちゃう · と思う · かも' },
+  { id: 'l2-school', lv: 2, title: 'School life', blurb: 'Senpai, clubs, rooftops · ても' },
+
+  { id: 'l3-story', lv: 3, title: 'Story & stakes', blurb: 'Giving/receiving · passive · causative · ば · こと' },
+
+  { id: 'l4-keigo', lv: 4, title: 'Keigo & formal speech', blurb: 'Honorific & humble verbs' },
+  { id: 'l4-villain', lv: 4, title: 'Villains, samurai & fate', blurb: 'ざるを得ない · ものか · まい · ぬ/ず' },
+];
+
+// Mnemonics for hiragana (key = romaji) and the confusing katakana.
+window.NH_MNEMONICS = {
+  hira: {
+    a: 'Arms thrown wide in surprise — "Ah!"', i: 'Two eels swimming side by side — "ee".', u: 'A sideways swan sipping — "oo".',
+    e: 'An exotic bird with a wing — "eh?".', o: 'A golfer\'s swing — "Oh!" as the ball goes in.',
+    ka: 'A kite on a string pulled to the right — "ka".', ki: 'A key with two teeth — "ki".', ku: 'A cuckoo\'s open beak — "ku".',
+    ke: 'A keg lying on its side — "ke".', ko: 'Two koi fish lying flat — "ko".',
+    sa: 'A samurai\'s topknot — "sa".', shi: 'A fishing hook — "she" caught a fish.', su: 'A swing with a loop — "sue" on a swing.',
+    se: 'A mouth saying "say" with a tongue out.', so: 'A zigzag of sewing thread — "so".',
+    ta: 'Looks like "t" + "a" — "ta"!', chi: 'A cheerleader with a bent pose — "chee!".', tsu: 'A tsunami wave curling — "tsu".',
+    te: 'A hand holding a pole — て means "hand" (手).', to: 'A toe with a thorn stuck in it — "to".',
+    na: 'A nun kneeling at a cross — "na".', ni: 'Knee guard with two stitches — "ni".', nu: 'Noodles caught in chopsticks — "nu".',
+    ne: 'A cat (neko) curling her tail — "ne".', no: 'A "no" sign — the loop is a swirl.',
+    ha: 'Someone laughing — "ha ha".', hi: 'A big smile — "hee hee".', fu: 'Mt. Fuji with clouds — "fu".',
+    he: 'A mountain peak — "heh".', ho: 'Santa laughing "ho ho" — は with a hat.',
+    ma: 'A mama with her top-knot — "ma".', mi: 'A musical "mi" — a 3 and 1 stacked.', mu: 'A cow — "moo" — with curled tail.',
+    me: 'An eye — め is 目, "me".', mo: 'Two fish hooks — "more fish".',
+    ya: 'A yak with horns — "ya".', yu: 'A fish swimming — "you".', yo: 'A yo-yo on a string — "yo".',
+    ra: 'A rabbit\'s ears — "ra".', ri: 'Two reeds — "ri" ("reed").', ru: 'A loop at the bottom like a rooster\'s curl — "ru".',
+    re: 'A reindeer\'s leg — "re".', ro: 'A road bending — "ro".',
+    wa: 'A waving, crying baby — "wah!".', o: 'Wow! An acrobat mid-flip — を ("o").', n: 'A slanted "n" shape — "n".',
+  },
+  kata: {
+    shi: 'シ: the dots sit sideways and the stroke sweeps UP — "she smiles". (Compare ツ.)',
+    tsu: 'ツ: the strokes point DOWN — "tsu" like raindrops falling. (Compare シ.)',
+    so: 'ソ: the short stroke is on TOP — "sew" a thread from above. (Compare ン.)',
+    n: 'ン: the short stroke is on the LEFT, the long one sweeps UP — "n". (Compare ソ.)',
+    nu: 'ヌ: a "nu" like a nutcracker. Not to be confused with ス.',
+    su: 'ス: a "su"-per slide. Compare ヌ.',
+    ku: 'ク: like a beak — compare タ (has an extra stroke).',
+    ta: 'タ: ク with an extra stroke — "ta".',
+    ra: 'ラ: a rabbit ear on a flat line — "ra".',
+    ro: 'ロ: a square mouth — "ro". Compare ヨ, コ.',
+    ko: 'コ: a corner — "ko". Compare ユ (extra line).',
+    yu: 'ユ: コ with a line through it — "you".',
+    me: 'メ: a cross — "me". Compare ナ.',
+    na: 'ナ: a cross with a hat — "na".',
+    wa: 'ワ: a hat (ウ without the top dot) — "wa".',
+    u: 'ウ: a hat with a top dot — "oo".',
+    fu: 'フ: a flat hook — "fu".',
+    e: 'エ: an I-beam — "eh".', ka: 'カ: a karate chop — "ka".', ki: 'キ: a key with teeth — "ki".',
+    mi: 'ミ: three strokes — "mi" = 3.', ma: 'マ: a mama\'s hat — "ma".',
+    te: 'テ: a T with a hat — "te".', to: 'ト: a "toe" — "to".',
+    ha: 'ハ: the roof of a hut — "ha".', hi: 'ヒ: a "he" smile, hooked — "hi".', he: 'ヘ: same as ヘ — mountain, "he".', ho: 'ホ: a cross with a snow-hat — "ho".',
+    ri: 'リ: two reeds — "ri".', ru: 'ル: a curled elephant\'s trunk? — "ru".', re: 'レ: a flat "re".',
+    a: 'ア: an axe head — "a".', i: 'イ: an eel — "ee".', o: 'オ: an owl\'s cross — "oh".',
+    ke: 'ケ: a kayak paddle — "ke".', se: 'セ: a sailboat — "se".', sa: 'サ: three strokes — "sa".',
+    ne: 'ネ: a "net" — "ne".', no: 'ノ: a slanted line — "no".',
+    mu: 'ム: a "moo" — a cow\'s head.', mo: 'モ: a "mo"ose with antlers.',
+    ya: 'ヤ: a yak\'s horns — "ya".', yo: 'ヨ: a "yo"gurt — three layers.',
+    ri2: '', wo: 'ヲ: rare; "wo" (object marker, almost always hiragana).',
+  },
+};

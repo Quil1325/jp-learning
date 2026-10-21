@@ -15,20 +15,34 @@
 </head>
 <body>
 <header class="top">
-  <h1 id="title">Sounds</h1>
-  <button id="speed" class="chip" aria-label="Toggle slow speech">Normal speed</button>
+  <button id="back" class="back" hidden aria-label="Back">‹</button>
+  <h1 id="title">Today</h1>
+  <button id="speed" class="chip" aria-label="Toggle slow speech">Normal</button>
 </header>
 
 <main id="view"></main>
 
 <nav class="tabs" role="tablist">
-  <button data-tab="sounds" class="on"><span>音</span>Sounds</button>
-  <button data-tab="kana"><span>あ</span>Kana</button>
-  <button data-tab="phrases"><span>話</span>Phrases</button>
-  <button data-tab="quiz"><span>？</span>Quiz</button>
+  <button data-tab="today" class="on"><span>今</span>Today</button>
+  <button data-tab="path"><span>道</span>Path</button>
+  <button data-tab="library"><span>あ</span>Library</button>
+  <button data-tab="read"><span>話</span>Read</button>
+  <button data-tab="me"><span>私</span>Me</button>
 </nav>
 
 <script src="data.js"></script>
-<script src="app.js"></script>
+<script src="core.js"></script>
+<script src="content-vocab.js"></script>
+<script src="content-kanji.js"></script>
+<script src="content-grammar.js"></script>
+<script src="content-read.js"></script>
+<script src="content-path.js"></script>
+<script src="catalog.js"></script>
+<script src="study.js"></script>
+<script src="views-main.js"></script>
+<script src="views-lib.js"></script>
+<script src="views-read.js"></script>
+<script src="views-me.js"></script>
+<script>NH.boot();</script>
 </body>
 </html>
