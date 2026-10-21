@@ -63,6 +63,10 @@
           <button class="linkbtn danger" id="reset">Reset all progress</button>
         </div>
 
+        <h2>App version</h2>
+        <div class="card pad"><p class="lead">Version <b>${esc(window.NH_VERSION || 'dev')}</b>. If a new feature isn't showing, tap below: it clears the offline copy and loads the newest files (your progress is kept).</p>
+          <button class="big-btn ghost center" id="upd">↻ Get latest version</button></div>
+
         <h2>About & credits</h2>
         <div class="card pad"><p class="lead">Stroke-order animations use <a href="https://kanjivg.tagaini.net" target="_blank" rel="noopener">KanjiVG</a> © Ulrich Apel and contributors, licensed <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a>. Course content was written for this app and has not been reviewed by a native speaker — if something looks wrong, tap “Report a mistake” on any item.</p>
         <a class="linkbtn" target="_blank" rel="noopener" href="${esc(NH.REPO)}/issues/new">Report a problem or suggest content</a></div>`;
@@ -70,6 +74,7 @@
       if (vs && voices.length) { const cur = NH.profile.voice && voices.find(v => v.name === NH.profile.voice); if (cur) vs.value = cur.name; vs.onchange = () => { NH.profile.voice = vs.value; NH.saveProfile(); NH.pickVoice(); NH.speak('ありがとう'); }; }
       $('#rate').oninput = e => { NH.profile.rate = +e.target.value; $('#rv').textContent = (+e.target.value).toFixed(2); NH.saveProfile(); };
       $('#vtest').onclick = () => NH.speak('ありがとう、がんばって！');
+      $('#upd').onclick = () => { NH.toast('Updating…'); NH.forceUpdate(); };
       $('#goal').onchange = e => { NH.profile.goal = +e.target.value; NH.saveProfile(); NH.toast('Goal updated'); };
       $('#addf').onsubmit = e => {
         e.preventDefault();

@@ -118,6 +118,12 @@
 
   NH.REPO = 'https://github.com/Quil1325/jp-learning';
   NH.reportUrl = what => `${NH.REPO}/issues/new?title=${encodeURIComponent('Content issue: ' + what)}&body=${encodeURIComponent('What looks wrong, and what should it be?\n\n(Item: ' + what + ')')}`;
+  // Drop offline caches + service worker and reload (keeps your progress, which lives in localStorage).
+  NH.forceUpdate = async () => {
+    try { (await navigator.serviceWorker?.getRegistrations?.() || []).forEach(r => r.unregister()); } catch {}
+    try { (await caches.keys()).forEach(k => caches.delete(k)); } catch {}
+    location.href = location.pathname + '?v=' + Date.now();
+  };
   NH.standalone = () => !!(window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
 
   // ---------- stroke order viewer (data: KanjiVG, CC BY-SA 3.0) ----------
@@ -192,6 +198,11 @@
     sync();
     try { navigator.storage?.persist?.(); } catch {}
     NH.setTab('today');
-    if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      const hadController = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(r => r.update().catch(() => {})).catch(() => {});
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded) { reloaded = true; location.reload(); } });
+    }
   };
 })();
