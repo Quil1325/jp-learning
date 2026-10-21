@@ -33,9 +33,15 @@ window.NH_UNITS = [
   { id: 'l2-school', lv: 2, title: 'School life', blurb: 'Senpai, clubs, rooftops · ても' },
 
   { id: 'l3-story', lv: 3, title: 'Story & stakes', blurb: 'Giving/receiving · passive · causative · ば · こと' },
+  { id: 'l3-mystery', lv: 3, title: 'Mystery & detective talk', blurb: 'Clues, culprits, deduction · kanji 事件犯証' },
+  { id: 'l3-bonds', lv: 3, title: 'Bonds & growth', blurb: 'Trust, regret, reunion · kanji 関信情誓' },
+  { id: 'l3-intent', lv: 3, title: 'Plans & expectations', blurb: 'はず · つもり · ようとする · ところ' },
+  { id: 'l3-flow', lv: 3, title: 'Connecting ideas', blurb: 'ながら · ので/のに · すぎる/やすい' },
 
   { id: 'l4-keigo', lv: 4, title: 'Keigo & formal speech', blurb: 'Honorific & humble verbs' },
   { id: 'l4-villain', lv: 4, title: 'Villains, samurai & fate', blurb: 'ざるを得ない · ものか · まい · ぬ/ず' },
+  { id: 'l4-epic', lv: 4, title: 'Epic battles & legends', blurb: 'Rivals, oaths, techniques · やがる · つつ/ことなく' },
+  { id: 'l4-nuance', lv: 4, title: 'Nuance & attitude', blurb: 'べき · に違いない · かねない · ずにはいられない' },
 ];
 
 // Mnemonics for hiragana (key = romaji) and the confusing katakana.
@@ -81,13 +87,13 @@ window.NH_MNEMONICS = {
     e: 'エ: an I-beam — "eh".', ka: 'カ: a karate chop — "ka".', ki: 'キ: a key with teeth — "ki".',
     mi: 'ミ: three strokes — "mi" = 3.', ma: 'マ: a mama\'s hat — "ma".',
     te: 'テ: a T with a hat — "te".', to: 'ト: a "toe" — "to".',
-    ha: 'ハ: the roof of a hut — "ha".', hi: 'ヒ: a "he" smile, hooked — "hi".', he: 'ヘ: same as ヘ — mountain, "he".', ho: 'ホ: a cross with a snow-hat — "ho".',
-    ri: 'リ: two reeds — "ri".', ru: 'ル: a curled elephant\'s trunk? — "ru".', re: 'レ: a flat "re".',
+    ha: 'ハ: the roof of a hut — "ha".', hi: 'ヒ: a "he" smile, hooked — "hi".', he: 'ヘ: looks the same as hiragana へ — a mountain peak, "he".', ho: 'ホ: a cross with a snow-hat — "ho".',
+    ri: 'リ: two reeds — "ri".', ru: 'ル: legs running — "ru".', re: 'レ: a flat "re".',
     a: 'ア: an axe head — "a".', i: 'イ: an eel — "ee".', o: 'オ: an owl\'s cross — "oh".',
     ke: 'ケ: a kayak paddle — "ke".', se: 'セ: a sailboat — "se".', sa: 'サ: three strokes — "sa".',
     ne: 'ネ: a "net" — "ne".', no: 'ノ: a slanted line — "no".',
     mu: 'ム: a "moo" — a cow\'s head.', mo: 'モ: a "mo"ose with antlers.',
     ya: 'ヤ: a yak\'s horns — "ya".', yo: 'ヨ: a "yo"gurt — three layers.',
-    ri2: '', wo: 'ヲ: rare; "wo" (object marker, almost always hiragana).',
+    wo: 'ヲ: rare; "wo" (object marker, almost always hiragana).',
   },
 };

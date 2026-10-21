@@ -11,7 +11,7 @@
       const max = Math.max(50, ...days.map(x => x.xp));
       const tot = Object.values(NH.profile.days).reduce((a, x) => ({ rev: a.rev + x.rev, ok: a.ok + x.ok }), { rev: 0, ok: 0 });
       const types = ['kana', 'vocab', 'kanji', 'grammar'];
-      const mine = NH.list.filter(i => i.type === 'custom');
+      const mine = NH.list.filter(i => i.type === 'custom'), voices = NH.jaVoices();
       el.innerHTML = `
         <div class="card pad"><div class="stat-row">
           <div><b>🔥 ${NH.streak()}</b><small>day streak</small></div><div><b>⭐ ${NH.profile.xp}</b><small>XP</small></div>
@@ -28,6 +28,16 @@
         <div class="card pad">
           <label class="field">Daily goal
             <select id="goal">${[20, 50, 100, 200].map(n => `<option ${n === NH.profile.goal ? 'selected' : ''} value="${n}">${n} XP${n === 20 ? ' (casual)' : n === 50 ? ' (regular)' : n === 100 ? ' (serious)' : ' (intense)'}</option>`).join('')}</select></label>
+        </div>
+
+        <h2>Voice</h2>
+        <div class="card pad">
+          <label class="field">Japanese voice
+            <select id="voice">${voices.length ? voices.map(v => `<option value="${esc(v.name)}" ${v.name === NH.profile.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('') : '<option>No Japanese voice found</option>'}</select></label>
+          <label class="field">Speed: <span id="rv">${(NH.profile.rate || 0.9).toFixed(2)}</span>
+            <input type="range" id="rate" min="0.5" max="1.1" step="0.05" value="${NH.profile.rate || 0.9}"></label>
+          <button class="big-btn ghost center" id="vtest">▶ Test voice (ありがとう、がんばって！)</button>
+          <p class="lead">For the best sound on iPhone, install a better voice: <b>Settings → Accessibility → Spoken Content → Voices → Japanese</b>, then download <b>Kyoko (Enhanced)</b> or another “Enhanced / Premium” voice. Pick it here.</p>
         </div>
 
         <h2>My words (${mine.length})</h2>
@@ -50,7 +60,15 @@
           <textarea id="imp" rows="3" placeholder="Paste a backup here to restore"></textarea>
           <button class="big-btn ghost center" id="restore">Restore from pasted backup</button>
           <button class="linkbtn danger" id="reset">Reset all progress</button>
-        </div>`;
+        </div>
+
+        <h2>About & credits</h2>
+        <div class="card pad"><p class="lead">Stroke-order animations use <a href="https://kanjivg.tagaini.net" target="_blank" rel="noopener">KanjiVG</a> © Ulrich Apel and contributors, licensed <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a>. Course content was written for this app and has not been reviewed by a native speaker — if something looks wrong, tap “Report a mistake” on any item.</p>
+        <a class="linkbtn" target="_blank" rel="noopener" href="${esc(NH.REPO)}/issues/new">Report a problem or suggest content</a></div>`;
+      const vs = $('#voice');
+      if (vs && voices.length) { const cur = NH.profile.voice && voices.find(v => v.name === NH.profile.voice); if (cur) vs.value = cur.name; vs.onchange = () => { NH.profile.voice = vs.value; NH.saveProfile(); NH.pickVoice(); NH.speak('ありがとう'); }; }
+      $('#rate').oninput = e => { NH.profile.rate = +e.target.value; $('#rv').textContent = (+e.target.value).toFixed(2); NH.saveProfile(); };
+      $('#vtest').onclick = () => NH.speak('ありがとう、がんばって！');
       $('#goal').onchange = e => { NH.profile.goal = +e.target.value; NH.saveProfile(); NH.toast('Goal updated'); };
       $('#addf').onsubmit = e => {
         e.preventDefault();
@@ -65,8 +83,9 @@
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([snap()], { type: 'application/json' }));
         a.download = `nihongo-backup-${NH.dayKey()}.json`; document.body.append(a); a.click(); a.remove();
+        NH.profile.lastBackup = Date.now(); NH.saveProfile();
       };
-      $('#cp').onclick = async () => { try { await navigator.clipboard.writeText(snap()); NH.toast('Backup copied'); } catch { $('#imp').value = snap(); NH.toast('Copy it from the box below'); } };
+      $('#cp').onclick = async () => { try { await navigator.clipboard.writeText(snap()); NH.profile.lastBackup = Date.now(); NH.saveProfile(); NH.toast('Backup copied'); } catch { $('#imp').value = snap(); NH.toast('Copy it from the box below'); } };
       $('#restore').onclick = () => {
         try {
           const o = JSON.parse($('#imp').value);

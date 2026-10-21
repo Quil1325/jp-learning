@@ -21,7 +21,15 @@
   function sounds(el) {
     el.innerHTML = SOUND_GUIDE.map((s, i) => `
       <details class="card" ${i === 0 ? 'open' : ''}><summary>${esc(s.title)}</summary><p class="lead">${esc(s.body)}</p>
-      <ul class="rows">${s.items.map(it => row(it.jp, it.jp, it.rom, it.tip)).join('')}</ul></details>`).join('');
+      <ul class="rows">${s.items.map(it => row(it.jp, it.jp, it.rom, it.tip)).join('')}</ul></details>`).join('') + pitchCard();
+  }
+
+  function pitchCard() {
+    const P = NH_PITCH;
+    return `<details class="card"><summary>Pitch accent (high / low melody)</summary>
+      ${P.intro.map(t => `<p class="lead">${esc(t)}</p>`).join('')}
+      ${P.groups.map(g => `<h3 class="pad-h">${esc(g.title)}</h3><ul class="rows">${g.items.map(it => `<li data-say="${esc(it.say)}"><span class="jp">${esc(it.jp)}</span><span class="mid">${NH.pitchSVG(it)}<small>${esc(it.say)} [${it.n}] · ${esc(it.en)}</small></span><span class="play">▶</span></li>`).join('')}</ul>`).join('')}
+      <p class="lead">The phone's voice follows its own accent model, so treat the diagrams as the reference and the audio as a rough guide.</p></details>`;
   }
 
   function kana(el) {

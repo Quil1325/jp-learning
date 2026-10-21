@@ -6,9 +6,11 @@
     title: 'Read & listen',
     render(el) {
       const done = NH.store.get('read', []);
-      el.innerHTML = `<p class="hint">Short scenes written for each level. Listen first, read along, then <b>shadow</b> (repeat each line out loud) and save lines you like to your review deck.</p>` +
+      el.innerHTML = `<button class="big-btn" id="drill"><span>🎧 Listening drill</span><small>Hear a line, pick what it means — 10 questions from every scene</small></button>
+        <p class="hint">Short scenes written for each level. Listen first, read along, then <b>shadow</b> (repeat each line out loud) and save lines you like to your review deck.</p>` +
         NH.levels.filter(l => NH.dialogues.some(d => d.lv === l.n)).map(l => `<h2>Level ${l.n} · ${esc(l.name)}</h2>` +
           NH.dialogues.filter(d => d.lv === l.n).map(d => `<button class="tile wide" data-d="${d.id}"><b>${done.includes(d.id) ? '✅' : '🎧'} ${esc(d.title)}</b><small>${esc(d.blurb)} · ${d.lines.length} lines</small></button>`).join('')).join('');
+      $('#drill').onclick = () => NH.startPractice(NH.lineItems(), 'Listening drill', 10);
       el.onclick = e => { const b = e.target.closest('[data-d]'); if (b) NH.go('dialogue', { id: b.dataset.d }); };
     },
   };
@@ -31,12 +33,14 @@
               <div class="bubble" data-line="${i}">
                 <span class="jp">${esc(l[1])}</span>
                 ${showRead && l[2] !== l[1] ? `<span class="read">${esc(l[2])}</span>` : ''}
-                ${showRead ? `<span class="rom">${esc(NH.romaji(l[2]))}</span>` : ''}
-                ${showEn ? `<span class="en">${esc(l[3])}</span>` : ''}
+                ${showRead ? `<span class="rom">${esc(l[3])}</span>` : ''}
+                ${showEn ? `<span class="en">${esc(l[4])}</span>` : ''}
               </div>
               <div class="tools"><button data-rec="${i}" class="chip ${rec === i ? 'on' : ''}">${rec === i ? '■ Stop' : '🎤 Shadow'}</button><button data-save="${i}" class="chip">＋ Save line</button><span class="mine" id="m${i}"></span></div>
             </div>`).join('')}</div>
+          <button class="big-btn center ghost" id="quizme">🎧 Quiz me on this scene</button>
           <button class="big-btn center" id="doneRead">Mark as read (+10 XP)</button>
+          <a class="linkbtn" target="_blank" rel="noopener" href="${esc(NH.reportUrl('Dialogue ' + d.title))}">Report a mistake in this scene</a>
           <p class="hint">Shadowing: tap a line to hear it, then 🎤 to record yourself and compare. Use 🐢 Slow at the top for a slower model.</p>`;
         bind();
       };
@@ -79,6 +83,7 @@
         $('#tRead').onclick = () => { showRead = !showRead; NH.profile.showRead = showRead; NH.saveProfile(); draw(); };
         $('#tEn').onclick = () => { showEn = !showEn; NH.profile.showEn = showEn; NH.saveProfile(); draw(); };
         $('#tPlay').onclick = playAll;
+        $('#quizme').onclick = () => NH.startPractice(NH.lineItems(x => x.id === d.id), d.title + ' · listening', d.lines.length);
         $('#doneRead').onclick = () => {
           const r = NH.store.get('read', []);
           if (!r.includes(d.id)) { r.push(d.id); NH.store.set('read', r); NH.addXP(10); NH.toast('+10 XP'); }
@@ -89,7 +94,7 @@
         el.querySelectorAll('[data-save]').forEach(b => b.onclick = e => {
           e.stopPropagation();
           const l = d.lines[+b.dataset.save];
-          const it = NH.addCustom({ jp: l[1], kana: l[2], en: l[3] });
+          const it = NH.addCustom({ jp: l[1], kana: l[2], rom: l[3].replace(/[.,!?…]/g, ''), en: l[4] });
           if (!NH.srs.stage(it.id)) NH.srs.learn(it.id, 1);
           NH.toast('Saved to your review deck'); b.textContent = '✓ Saved';
         });

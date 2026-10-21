@@ -16,7 +16,11 @@
       const started = NH.started(NH.list.filter(i => i.lv >= 0)), mastered = NH.list.filter(i => srs.bucket(i.id) === 'mastered').length;
       const weak = NH.list.filter(i => srs.stage(i.id) > 0 && srs.stage(i.id) <= 3);
       const level = NH.dialogues.find(d => !NH.store.get('read', []).includes(d.id) && d.lv <= (nu ? nu.lv : 4)) || NH.dialogues[0];
+      const iosBrowser = /iphone|ipad|ipod/i.test(navigator.userAgent) && !NH.standalone() && !NH.store.get('hideInstall', false);
+      const lastB = NH.profile.lastBackup || 0, needBackup = started >= 20 && Date.now() - lastB > 14 * 864e5;
       el.innerHTML = `
+        ${iosBrowser ? `<div class="card pad notice"><b>Install on your iPhone</b><p class="lead">Tap <b>Share</b> <span class="sharei">⎋</span> → <b>Add to Home Screen</b>. Then open it from the Home Screen: it works offline, runs full-screen, and your progress is stored there. (Progress made in Safari does not carry over — install first.)</p><button class="linkbtn" id="hideInst">Don't show again</button></div>` : ''}
+        ${needBackup ? `<div class="card pad notice"><b>Back up your progress</b><p class="lead">It has been a while. Download a backup in <b>Me → Backup</b> so you never lose your streak.</p><button class="linkbtn" id="hideBk">Remind me later</button></div>` : ''}
         <div class="hero card pad">
           <div class="stat-row">
             <div><b>🔥 ${NH.streak()}</b><small>day streak</small></div>
@@ -43,6 +47,8 @@
           <button class="tile" id="path"><b>🗺 Your path</b><small>Level ${nu ? nu.lv : 4} · ${mastered} mastered</small></button>
         </div>
         <p class="hint center">Everything is unlocked. Follow the suggested path, or jump anywhere — your reviews adapt.</p>`;
+      $('#hideInst')?.addEventListener('click', () => { NH.store.set('hideInstall', true); NH.draw(); });
+      $('#hideBk')?.addEventListener('click', () => { NH.profile.lastBackup = Date.now() - 7 * 864e5; NH.saveProfile(); NH.draw(); });
       $('#rev').onclick = () => NH.startReview();
       if (nu) $('#learn').onclick = () => NH.startLesson(nu.id);
       $('#weak').onclick = () => NH.startPractice(weak, 'Weak spots');
@@ -147,7 +153,8 @@
         <div class="card pad"><p class="lead">Status: <b>${srs.bucket(it.id)}</b>${d ? ` · ${d.c} right / ${d.w} wrong${srs.isDue(it.id) ? ' · due now' : ''}` : ''}</p>
         ${s ? '' : '<button class="big-btn" id="learn">Start learning this</button>'}
         ${s ? '<button class="big-btn ghost" id="pr">Practice it now</button>' : '<button class="big-btn ghost" id="known">I already know this</button>'}
-        ${s ? '<button class="linkbtn" id="forget">Reset progress</button>' : ''}</div>`;
+        ${s ? '<button class="linkbtn" id="forget">Reset progress</button>' : ''}
+        <a class="linkbtn" target="_blank" rel="noopener" href="${esc(NH.reportUrl(it.ch || it.jp || it.title))}">Report a mistake in this item</a></div>`;
       const on = (id, f) => { const b = $('#' + id); if (b) b.onclick = f; };
       on('learn', () => NH.go('lesson', { items: [it] }));
       on('known', () => { srs.learn(it.id, 4); NH.draw(); });

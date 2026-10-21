@@ -74,18 +74,20 @@
 
   // ---------- speech ----------
   let voice = null;
+  const jaVoices = () => ('speechSynthesis' in window ? speechSynthesis.getVoices() : []).filter(v => /^ja/i.test((v.lang || '').replace('_', '-')));
+  NH.jaVoices = jaVoices;
   const pickVoice = () => {
-    if (!('speechSynthesis' in window)) return;
-    const vs = speechSynthesis.getVoices().filter(v => /^ja/i.test((v.lang || '').replace('_', '-')));
-    voice = vs.find(v => /kyoko|o-ren|siri|premium|enhanced/i.test(v.name)) || vs[0] || null;
+    const vs = jaVoices();
+    voice = vs.find(v => v.name === NH.profile.voice) || vs.find(v => /premium|enhanced|siri/i.test(v.name)) || vs.find(v => /kyoko|o-ren/i.test(v.name)) || vs[0] || null;
   };
+  NH.pickVoice = pickVoice;
   if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.addEventListener?.('voiceschanged', pickVoice); }
   NH.speak = (text, opt = {}) => {
     if (!text) return;
     if (!('speechSynthesis' in window)) return NH.toast('Speech not supported on this device');
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(text).replace(/[＿_]+/g, ' '));
-    u.lang = 'ja-JP'; if (voice) u.voice = voice; u.rate = NH.profile.slow ? 0.55 : 0.9;
+    u.lang = 'ja-JP'; if (voice) u.voice = voice; u.rate = NH.profile.slow ? 0.55 : (NH.profile.rate || 0.9);
     if (opt.pitch) u.pitch = opt.pitch;
     if (opt.onend) { u.onend = opt.onend; u.onerror = opt.onend; }
     speechSynthesis.speak(u);
@@ -102,6 +104,49 @@
     t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2200);
   };
 
+  NH.REPO = 'https://github.com/Quil1325/jp-learning';
+  NH.reportUrl = what => `${NH.REPO}/issues/new?title=${encodeURIComponent('Content issue: ' + what)}&body=${encodeURIComponent('What looks wrong, and what should it be?\n\n(Item: ' + what + ')')}`;
+  NH.standalone = () => !!(window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+
+  // ---------- stroke order viewer (data: KanjiVG, CC BY-SA 3.0) ----------
+  let strokesP = null;
+  NH.loadStrokes = () => strokesP || (strokesP = window.NH_STROKES ? Promise.resolve(NH_STROKES) : new Promise((res, rej) => {
+    const sc = document.createElement('script'); sc.src = 'strokes.js';
+    sc.onload = () => res(window.NH_STROKES); sc.onerror = () => { strokesP = null; rej(); };
+    document.head.append(sc);
+  }));
+  NH.mountStrokes = root => {
+    root.querySelectorAll('[data-stroke]:not([data-mounted])').forEach(box => {
+      box.dataset.mounted = '1';
+      NH.loadStrokes().then(data => {
+        const chars = [...box.dataset.stroke].filter(c => data[c]);
+        if (!chars.length) { box.remove(); return; }
+        box.innerHTML = `<div class="svgs">${chars.map(c => `<svg viewBox="0 0 109 109" class="kvg" data-c="${c}">
+          ${data[c].map(st => `<path d="${st[0]}" class="ghost"/>`).join('')}
+          ${data[c].map(st => `<path d="${st[0]}" class="ink" pathLength="1"/>`).join('')}
+          ${data[c].map((st, i) => `<text x="${st[1]}" y="${st[2]}" class="num" opacity="0">${i + 1}</text>`).join('')}</svg>`).join('')}</div>
+          <button class="chip">▶ Stroke order</button>`;
+        const play = () => {
+          let t = 0;
+          box.querySelectorAll('svg').forEach(svg => {
+            svg.querySelectorAll('.ink').forEach(p => { p.getAnimations?.().forEach(a => a.cancel()); p.style.strokeDashoffset = 1; });
+            svg.querySelectorAll('.num').forEach(n => n.setAttribute('opacity', '0'));
+            const inks = svg.querySelectorAll('.ink'), nums = svg.querySelectorAll('.num');
+            inks.forEach((p, i) => {
+              const a = p.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 550, delay: t, fill: 'forwards', easing: 'ease-in-out' });
+              a.onfinish = () => { p.style.strokeDashoffset = 0; nums[i]?.setAttribute('opacity', '1'); };
+              t += 650;
+            });
+          });
+        };
+        box.querySelector('button').onclick = play;
+        box.querySelectorAll('svg').forEach(svg => svg.querySelectorAll('.ink').forEach(p => { p.style.strokeDashoffset = 0; }));
+        box.querySelectorAll('.num').forEach(n => n.setAttribute('opacity', '1'));
+        setTimeout(play, 300);
+      }).catch(() => box.remove());
+    });
+  };
+
   // ---------- navigation ----------
   const ROOT = { today: 'today', path: 'path', library: 'library', read: 'read', me: 'me' };
   const main = () => $('#view');
@@ -112,6 +157,7 @@
     $('#back').hidden = NH.stack.length < 2;
     $('#title').textContent = (typeof v.title === 'function' ? v.title(top.args) : v.title) || '';
     v.render(el, top.args || {});
+    NH.mountStrokes(el);
     document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === NH.tab));
   };
   NH.go = (name, args = {}) => { NH.stack.push({ name, args }); NH.draw(); window.scrollTo(0, 0); };
@@ -126,6 +172,7 @@
     const sync = () => { sp.textContent = NH.profile.slow ? '🐢 Slow' : 'Normal'; sp.classList.toggle('on', NH.profile.slow); };
     sp.onclick = () => { NH.profile.slow = !NH.profile.slow; NH.saveProfile(); sync(); };
     sync();
+    try { navigator.storage?.persist?.(); } catch {}
     NH.setTab('today');
     if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
   };

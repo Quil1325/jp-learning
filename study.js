@@ -81,6 +81,13 @@
       return choice(item, { prompt: d[0], big: false, sub: d[3], say: filled, answer: d[1], options: [d[1], ...d[2]].slice(0, 4), extra: `<p class="mn"><b>${esc(item.title)}</b><br>${esc(filled)}<br><small>${esc(d[3])}</small></p>` });
     }
 
+    if (T === 'line') {
+      const pool = NH.dialogues.flatMap(d => d.lines.map(l => l[4])).filter(e => e !== item.en);
+      return choice(item, { prompt: '🔊', big: true, sayFirst: true, sub: 'Listen — what does the line mean?', say: item.kana, answer: item.en,
+        options: [item.en, ...shuffle([...new Set(pool)]).slice(0, 3)], optClass: 'sentopt',
+        extra: `<p class="mn" data-say="${esc(item.kana)}"><b>${esc(item.jp)}</b><br>${esc(item.rom)}<br>${esc(item.en)}</p>` });
+    }
+
     // custom
     const base = { say: item.kana || item.jp, extra: `<p class="mn"><b>${esc(item.jp)}</b> ${esc(item.rom)} — ${esc(item.en)}</p>` };
     const pred = x => !!x.en && x.type !== 'grammar' && x.type !== 'kanji' && x.type !== 'kana';
@@ -89,12 +96,15 @@
     return choice(item, { ...base, prompt: item.jp, big: item.jp.length < 8, sub: 'Meaning?', answer: item.en, options: [item.en, ...distract(item, x => x.en, 3, pred)] });
   }
   NH.makeQ = makeQ;
+  // Virtual (non-SRS) items for listening drills
+  NH.lineItems = (filter = () => true) => NH.dialogues.filter(filter).flatMap(d => d.lines.map((l, i) => ({ id: `dl:${d.id}:${i}`, type: 'line', lv: d.lv, u: d.u, jp: l[1], kana: l[2], rom: l[3], en: l[4] })));
 
   // ---------- detail card (lessons, library, unit lists) ----------
   NH.itemDetail = item => {
     const say = (t, c = '') => `data-say="${esc(t)}" ${c}`;
     if (item.type === 'kana') return `
       <div class="detail" ${say(item.ch)}><div class="huge">${esc(item.ch)}</div><div class="rom big">${esc(item.rom)}</div>
+      <div class="strokebox" data-stroke="${esc(item.ch)}"></div>
       ${item.mn ? `<p class="mn">${esc(item.mn)}</p>` : ''}<p class="play">▶ tap to hear</p></div>`;
     if (item.type === 'vocab' || item.type === 'custom') return `
       <div class="detail"><div class="huge sm" ${say(item.kana || item.jp)}>${esc(item.jp)}</div>
@@ -105,6 +115,7 @@
     if (item.type === 'kanji') {
       const words = NH.list.filter(x => x.type === 'vocab' && x.jp.includes(item.ch));
       return `<div class="detail"><div class="huge" ${say(item.main)}>${esc(item.ch)}</div><div class="en big">${esc(item.en)}</div>
+      <div class="strokebox" data-stroke="${esc(item.ch)}"></div>
       <table class="rd"><tr><td>on’yomi</td><td>${esc(item.on || '—')}</td></tr><tr><td>kun’yomi</td><td>${esc(item.kun || '—')}</td></tr></table>
       <p class="mn">${esc(item.mn)}</p>
       ${words.length ? `<h3>Words using it</h3>${words.map(w => `<div class="exbox" ${say(w.kana)}><span class="jp">${esc(w.jp)}</span><small>${esc(w.kana)} — ${esc(w.en)}</small><span class="play">▶</span></div>`).join('')}` : ''}
@@ -246,6 +257,7 @@
         $('#quit').onclick = () => NH.back();
         $('#nx').onclick = () => { if (++i < items.length) { draw(); window.scrollTo(0, 0); } else NH.replace('session', { title: 'Quick quiz', items, mode: 'lesson', again: a.again }); };
         $('#known').onclick = () => { srs.learn(it.id, 4); items.splice(i, 1); NH.toast('Marked as known'); if (!items.length) NH.back(); else { if (i >= items.length) i = items.length - 1; draw(); } };
+        NH.mountStrokes(el);
         if (it.type === 'kana' || it.type === 'vocab') setTimeout(() => NH.speak(it.kana || it.ch || it.jp), 250);
       };
       draw();

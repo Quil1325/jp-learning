@@ -1,0 +1,140 @@
+// More vocabulary: deeper Level 3 and Level 4 units. Row: [word, reading, meaning, example?, example meaning?]
+(() => {
+  const V = (u, lv, rows) => rows.forEach(r => NH_VOCAB.push({ u, lv, jp: r[0], kana: r[1] || r[0], en: r[2], ex: r[3] || '', exEn: r[4] || '' }));
+
+  // ===== LEVEL 3 =====
+  V('l3-mystery', 3, [
+    ['事件', 'じけん', 'incident / case', 'じけんがおきた。', 'An incident has occurred.'],
+    ['犯人', 'はんにん', 'culprit', 'はんにんはだれだ？', 'Who is the culprit?'],
+    ['証拠', 'しょうこ', 'evidence', 'しょうこがない。', 'There is no evidence.'],
+    ['真相', 'しんそう', 'the truth of the matter'],
+    ['推理', 'すいり', 'deduction', 'すいりをはじめよう。', "Let's begin the deduction."],
+    ['警察', 'けいさつ', 'police'],
+    ['容疑者', 'ようぎしゃ', 'suspect'],
+    ['現場', 'げんば', 'the scene (of an incident)'],
+    ['手がかり', 'てがかり', 'clue'],
+    ['動機', 'どうき', 'motive'],
+    ['事実', 'じじつ', 'fact'],
+    ['証明', 'しょうめい', 'proof / to prove'],
+    ['嘘', 'うそ', 'lie', 'うそをつくな！', "Don't lie!"],
+    ['探す', 'さがす', 'to search for', 'かれをさがしている。', "I'm looking for him."],
+    ['調べる', 'しらべる', 'to investigate / look up'],
+    ['気づく', 'きづく', 'to notice', 'やっときづいた。', 'I finally noticed.'],
+    ['驚く', 'おどろく', 'to be surprised'],
+    ['疑う', 'うたがう', 'to doubt / suspect'],
+    ['隠す', 'かくす', 'to hide (something)'],
+    ['集める', 'あつめる', 'to collect / gather'],
+    ['認める', 'みとめる', 'to admit / recognize', 'おまえをみとめる。', 'I acknowledge you.'],
+    ['消える', 'きえる', 'to vanish'],
+    ['残る', 'のこる', 'to remain'],
+  ]);
+
+  V('l3-bonds', 3, [
+    ['関係', 'かんけい', 'relationship / connection', 'かんけいない！', "It's none of your business!"],
+    ['信頼', 'しんらい', 'trust'],
+    ['友情', 'ゆうじょう', 'friendship'],
+    ['成長', 'せいちょう', 'growth', 'せいちょうしたな。', "You've grown."],
+    ['仲直り', 'なかなおり', 'making up'],
+    ['喧嘩', 'けんか', 'fight / quarrel'],
+    ['告白', 'こくはく', 'confession (of love)'],
+    ['片思い', 'かたおもい', 'unrequited love'],
+    ['初恋', 'はつこい', 'first love'],
+    ['感謝', 'かんしゃ', 'gratitude', 'かんしゃしている。', 'I am grateful.'],
+    ['後悔', 'こうかい', 'regret', 'こうかいしたくない。', "I don't want to regret it."],
+    ['別れ', 'わかれ', 'parting'],
+    ['再会', 'さいかい', 'reunion'],
+    ['誓う', 'ちかう', 'to vow'],
+    ['祈る', 'いのる', 'to pray / to wish'],
+    ['叫ぶ', 'さけぶ', 'to shout'],
+    ['頼む', 'たのむ', 'to ask a favor / entrust', 'たのむ！', "I'm begging you!"],
+    ['支える', 'ささえる', 'to support'],
+    ['励ます', 'はげます', 'to encourage'],
+    ['比べる', 'くらべる', 'to compare'],
+  ]);
+
+  V('l3-intent', 3, [
+    ['予定', 'よてい', 'plan / schedule', 'あしたのよていは？', "What's the plan for tomorrow?"],
+    ['準備', 'じゅんび', 'preparation', 'じゅんびはできた。', "I'm ready."],
+    ['経験', 'けいけん', 'experience'],
+    ['相談', 'そうだん', 'consultation', 'そうだんしてもいい？', 'May I consult you?'],
+    ['心配', 'しんぱい', 'worry', 'しんぱいするな。', "Don't worry."],
+    ['説明', 'せつめい', 'explanation'],
+    ['参加', 'さんか', 'participation'],
+    ['連絡', 'れんらく', 'contact'],
+  ]);
+
+  V('l3-flow', 3, [
+    ['結果', 'けっか', 'result'],
+    ['原因', 'げんいん', 'cause'],
+    ['条件', 'じょうけん', 'condition'],
+    ['方法', 'ほうほう', 'method'],
+    ['途中', 'とちゅう', 'midway'],
+    ['最初', 'さいしょ', 'the first'],
+    ['最後', 'さいご', 'the last / the end'],
+    ['必要', 'ひつよう', 'necessary'],
+    ['可能', 'かのう', 'possible'],
+    ['不可能', 'ふかのう', 'impossible'],
+  ]);
+
+  // ===== LEVEL 4 =====
+  V('l4-keigo', 4, [
+    ['お客様', 'おきゃくさま', 'customer / guest (honorific)'],
+    ['ご主人様', 'ごしゅじんさま', 'master (honorific)'],
+    ['かしこまりました', '', 'understood (very polite)', 'かしこまりました、すぐにまいります。', 'Certainly, I will come right away.'],
+    ['承知', 'しょうち', 'acknowledgement (humble)'],
+    ['失礼', 'しつれい', 'rudeness / excuse me', 'しつれいします。', 'Excuse me. / Goodbye.'],
+    ['申し訳ございません', 'もうしわけございません', 'I am very sorry'],
+    ['ご覧になる', 'ごらんになる', 'to see (honorific)'],
+    ['差し上げる', 'さしあげる', 'to give (humble)'],
+    ['頂戴する', 'ちょうだいする', 'to receive (humble)'],
+    ['恐縮', 'きょうしゅく', 'humble gratitude / embarrassment'],
+  ]);
+
+  V('l4-epic', 4, [
+    ['宿敵', 'しゅくてき', 'arch-enemy'],
+    ['覇道', 'はどう', 'the path of conquest'],
+    ['死闘', 'しとう', 'life-and-death battle'],
+    ['奥義', 'おうぎ', 'ultimate technique'],
+    ['秘術', 'ひじゅつ', 'secret art'],
+    ['継承', 'けいしょう', 'succession / inheritance'],
+    ['神話', 'しんわ', 'myth'],
+    ['末裔', 'まつえい', 'descendant'],
+    ['憎悪', 'ぞうお', 'hatred'],
+    ['咆哮', 'ほうこう', 'roar'],
+    ['斬る', 'きる', 'to slash'],
+    ['貫く', 'つらぬく', 'to pierce / to stay true to', 'しんねんをつらぬく。', 'I will stay true to my convictions.'],
+    ['砕く', 'くだく', 'to smash'],
+    ['散る', 'ちる', 'to scatter / fall (petals)'],
+    ['蘇る', 'よみがえる', 'to revive'],
+    ['誓い', 'ちかい', 'oath'],
+    ['絆', 'きずな', 'bond'],
+    ['刃', 'やいば', 'blade'],
+    ['闘志', 'とうし', 'fighting spirit'],
+    ['結界', 'けっかい', 'barrier (magic)'],
+    ['召喚', 'しょうかん', 'summoning'],
+    ['暴走', 'ぼうそう', 'running out of control'],
+    ['理想', 'りそう', 'ideal'],
+    ['信念', 'しんねん', 'conviction'],
+    ['正義', 'せいぎ', 'justice'],
+    ['悪', 'あく', 'evil'],
+    ['罪', 'つみ', 'sin / crime'],
+  ]);
+
+  V('l4-nuance', 4, [
+    ['当然', 'とうぜん', 'natural / of course'],
+    ['確実', 'かくじつ', 'certain'],
+    ['偶然', 'ぐうぜん', 'coincidence'],
+    ['必然', 'ひつぜん', 'inevitable'],
+    ['皮肉', 'ひにく', 'irony'],
+    ['矛盾', 'むじゅん', 'contradiction'],
+    ['妥協', 'だきょう', 'compromise'],
+    ['例外', 'れいがい', 'exception'],
+    ['本質', 'ほんしつ', 'essence'],
+    ['責める', 'せめる', 'to blame'],
+    ['償う', 'つぐなう', 'to atone for'],
+    ['揺らぐ', 'ゆらぐ', 'to waver'],
+    ['迷う', 'まよう', 'to hesitate / get lost'],
+    ['躊躇', 'ちゅうちょ', 'hesitation'],
+    ['敢えて', 'あえて', 'daringly / purposely'],
+  ]);
+})();
