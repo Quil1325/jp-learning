@@ -3,19 +3,22 @@
   const NH = window.NH, { esc, $ } = NH, srs = NH.srs;
   const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
   const dot = id => `<span class="dot ${srs.bucket(id)}" title="${srs.bucket(id)}"></span>`;
-  const levelOf = n => NH.levels.find(l => l.n === n);
+  const levelOf = n => NH.levelOf(n);
+  const trackSeg = () => `<div class="seg" id="trk"><button data-t="anime" class="${NH.track() === 'anime' ? 'on' : ''}">🎌 Anime Japanese</button><button data-t="life" class="${NH.track() === 'life' ? 'on' : ''}">🛍 Everyday Japan</button></div>`;
+  const bindTrack = el => { const t = el.querySelector('#trk'); if (t) t.onclick = e => { const b = e.target.closest('button'); if (!b) return; NH.profile.track = b.dataset.t; NH.saveProfile(); NH.draw(); }; };
 
   // ---------- TODAY ----------
   NH.views.today = {
     title: 'Today',
     render(el) {
-      const dueItems = srs.due(), nu = NH.nextUnit();
+      const track = NH.track(), dueItems = srs.due(), nu = NH.nextUnit(track);
       const left = nu ? NH.unitItems(nu.id).filter(i => !srs.stage(i.id)).length : 0;
       const goal = NH.profile.goal, xp = NH.todayXP();
-      const lvl = nu ? levelOf(nu.lv) : levelOf(4);
+      const lvl = nu ? levelOf(nu.lv) : levelOf(track === 'life' ? 13 : 4);
       const started = NH.started(NH.list.filter(i => i.lv >= 0)), mastered = NH.list.filter(i => srs.bucket(i.id) === 'mastered').length;
       const weak = NH.list.filter(i => srs.stage(i.id) > 0 && srs.stage(i.id) <= 3);
-      const level = NH.dialogues.find(d => !NH.store.get('read', []).includes(d.id) && d.lv <= (nu ? nu.lv : 4)) || NH.dialogues[0];
+      const readList = NH.store.get('read', []);
+      const level = NH.dialogues.find(d => !readList.includes(d.id) && (track === 'life' ? d.lv >= 11 && d.lv <= (nu ? nu.lv : 13) : d.lv < 11 && d.lv <= (nu ? nu.lv : 4))) || NH.dialogues.find(d => (track === 'life') === (d.lv >= 11)) || NH.dialogues[0];
       const iosBrowser = /iphone|ipad|ipod/i.test(navigator.userAgent) && !NH.standalone() && !NH.store.get('hideInstall', false);
       const lastB = NH.profile.lastBackup || 0, needBackup = started >= 20 && Date.now() - lastB > 14 * 864e5;
       el.innerHTML = `
@@ -31,12 +34,13 @@
           <small>${xp >= goal ? '🎉 Daily goal reached!' : `${xp}/${goal} XP today`}</small></div>
         </div>
 
-        <button class="big-btn ${dueItems.length ? '' : 'ghost'}" id="rev">
+        ${trackSeg()}
+        <button class="big-btn ${dueItems.length ? '' : 'ghost'}" id="rev" style="margin-top:12px">
           <span>📚 Reviews</span><span class="badge">${dueItems.length}</span>
           <small>${dueItems.length ? 'Spaced repetition: do these now to lock them in' : 'Nothing due — learn something new!'}</small></button>
 
         ${nu ? `<button class="big-btn" id="learn"><span>✨ Learn new</span><span class="badge">${Math.min(5, left)}</span>
-          <small>${esc(nu.title)} · ${left} new left · Level ${nu.lv}: ${esc(lvl.name)}</small></button>` : '<div class="card pad center"><p class="lead">You have started every item! Keep reviewing and reading.</p></div>'}
+          <small>${esc(nu.title)} · ${left} new left · ${NH.levelLabel(nu.lv)}: ${esc(lvl.name)}</small></button>` : '<div class="card pad center"><p class="lead">You have started every item! Keep reviewing and reading.</p></div>'}
 
         <div class="two">
           <button class="tile" id="weak"><b>🎯 Weak spots</b><small>${weak.length} items</small></button>
@@ -44,9 +48,12 @@
         </div>
         <div class="two">
           <button class="tile" id="quick"><b>⚡ Quick practice</b><small>mixed 10 questions</small></button>
-          <button class="tile" id="path"><b>🗺 Your path</b><small>Level ${nu ? nu.lv : 4} · ${mastered} mastered</small></button>
+          <button class="tile" id="path"><b>🗺 Your path</b><small>${NH.levelLabel(nu ? nu.lv : (track === 'life' ? 13 : 4))} · ${mastered} mastered</small></button>
         </div>
+        <button class="tile wide" id="pb" style="margin-top:10px"><b>📖 Phrasebook</b><small>Shopping, eating out, trains, hotels — say it or show it to staff</small></button>
         <p class="hint center">Everything is unlocked. Follow the suggested path, or jump anywhere — your reviews adapt.</p>`;
+      bindTrack(el);
+      $('#pb').onclick = () => NH.libGo('phrasebook');
       $('#hideInst')?.addEventListener('click', () => { NH.store.set('hideInstall', true); NH.draw(); });
       $('#hideBk')?.addEventListener('click', () => { NH.profile.lastBackup = Date.now() - 7 * 864e5; NH.saveProfile(); NH.draw(); });
       $('#rev').onclick = () => NH.startReview();
@@ -62,14 +69,14 @@
   NH.views.path = {
     title: 'Your path',
     render(el) {
-      const nu = NH.nextUnit();
-      el.innerHTML = `<p class="hint">Five levels, from your first sounds to villain-level speech. Everything is open: do the suggested next unit, or jump around.</p>` +
-        NH.levels.map(l => {
+      const track = NH.track(), nu = NH.nextUnit(track);
+      el.innerHTML = `${trackSeg()}<p class="hint">${track === 'life' ? 'Everyday Japan: real situations for travel and living. Everything is open — start with Survival, or jump to what you need this week.' : 'Anime Japanese: from your first sounds to villain-level speech. Everything is open — follow the suggested unit or jump around.'}</p>` +
+        NH.levels.filter(l => l.track === track).map(l => {
           const items = NH.levelItems(l.n), c = srs.counts(items), st = NH.started(items);
           const units = NH.units.filter(u => u.lv === l.n);
-          const open = nu ? nu.lv === l.n : l.n === 4;
+          const open = nu ? nu.lv === l.n : l.n === (track === 'life' ? 13 : 4);
           return `<details class="card level" ${open ? 'open' : ''}>
-            <summary><span class="lvl">L${l.n}</span><span class="grow"><b>${esc(l.name)}</b><small>${esc(l.jlpt)} · ${items.length} items</small></span><span class="pct">${pct(st, items.length)}%</span></summary>
+            <summary><span class="lvl">${NH.tag(l.n)}</span><span class="grow"><b>${esc(l.name)}</b><small>${esc(l.jlpt)} · ${items.length} items</small></span><span class="pct">${pct(st, items.length)}%</span></summary>
             <p class="lead">${esc(l.blurb)}</p>
             <div class="stackbar">${NH.BUCKETS.map(b => `<i class="${b}" style="flex:${c[b]}"></i>`).join('')}<i class="new" style="flex:${c.new}"></i></div>
             <ul class="rows">${units.map(u => {
@@ -82,6 +89,7 @@
               <button class="chip" data-skip="${l.n}">Skip: I know this</button>
             </div></details>`;
         }).join('');
+      bindTrack(el);
       el.onclick = e => {
         const li = e.target.closest('li[data-u]');
         if (li) return NH.go('unit', { id: li.dataset.u });
@@ -90,9 +98,9 @@
         const sk = e.target.closest('[data-skip]');
         if (sk) {
           const n = +sk.dataset.skip;
-          if (confirm(`Mark every unstarted Level ${n} item as "known" (stage 4)? They will come back for review in a few days. Tip: take the check-up first.`)) {
+          if (confirm(`Mark every unstarted ${NH.levelLabel(n)} item as "known" (stage 4)? They will come back for review in a few days. Tip: take the check-up first.`)) {
             NH.levelItems(n).filter(i => !srs.stage(i.id)).forEach(i => srs.learn(i.id, 4));
-            NH.toast(`Level ${n} fast-tracked`); NH.draw();
+            NH.toast(`${NH.levelLabel(n)} fast-tracked`); NH.draw();
           }
         }
       };
@@ -102,10 +110,10 @@
   // Placement-style test: 20 questions from the level; ≥85% offers fast-track
   function levelCheck(n) {
     const items = NH.levelItems(n);
-    NH.startPractice(items, `Level ${n} check-up`, 20, {
+    NH.startPractice(items, `${NH.levelLabel(n)} check-up`, 20, {
       after: ({ pct: p }) => ({
-        html: `<p class="lead">${p >= 85 ? `Strong result! You may already know Level ${n}.` : p >= 60 ? 'Decent — some gaps. Work through the units you missed.' : 'Good baseline. Start with the suggested unit.'}</p>
-          ${p >= 85 ? `<button class="big-btn center" id="ft">Fast-track Level ${n} (mark unstarted as known)</button>` : ''}`,
+        html: `<p class="lead">${p >= 85 ? `Strong result! You may already know ${NH.levelLabel(n)}.` : p >= 60 ? 'Decent — some gaps. Work through the units you missed.' : 'Good baseline. Start with the suggested unit.'}</p>
+          ${p >= 85 ? `<button class="big-btn center" id="ft">Fast-track ${NH.levelLabel(n)} (mark unstarted as known)</button>` : ''}`,
         bind: el2 => { const b = el2.querySelector('#ft'); if (b) b.onclick = () => { NH.levelItems(n).filter(i => !srs.stage(i.id)).forEach(i => srs.learn(i.id, 4)); NH.toast('Fast-tracked'); NH.back(); }; },
       }),
     });
@@ -119,7 +127,7 @@
       const fresh = items.filter(i => !srs.stage(i.id)), due = items.filter(i => srs.isDue(i.id));
       const dlg = NH.dialogues.filter(d => d.u === a.id);
       el.innerHTML = `
-        <div class="card pad"><p class="lead"><b>Level ${u.lv}</b> · ${esc(u.blurb)}</p>
+        <div class="card pad"><p class="lead"><b>${NH.levelLabel(u.lv)}</b> · ${esc(u.blurb)}</p>
           <div class="stackbar">${NH.BUCKETS.map(b => `<i class="${b}" style="flex:${c[b]}"></i>`).join('')}<i class="new" style="flex:${c.new}"></i></div>
           <p class="hint">${NH.BUCKETS.map(b => `${c[b]} ${b}`).join(' · ')} · ${c.new} new</p>
           <button class="big-btn" id="learn" ${fresh.length ? '' : 'disabled'}>✨ Learn next ${Math.min(5, fresh.length)} new</button>
@@ -127,6 +135,7 @@
           <button class="big-btn ghost" id="prac">⚡ Practice this unit</button>
           ${fresh.length ? '<button class="linkbtn" id="known">I already know this whole unit</button>' : ''}
         </div>
+        ${u.tips ? `<div class="card pad tips"><b>🎌 Good to know</b><ul>${u.tips.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}
         ${dlg.map(d => `<button class="tile wide" data-d="${d.id}"><b>🎧 ${esc(d.title)}</b><small>Dialogue · ${esc(d.blurb)}</small></button>`).join('')}
         <ul class="rows listcard">${items.map(i => `<li data-i="${esc(i.id)}">${dot(i.id)}
           <span class="jp">${esc(i.ch || i.jp || i.pat)}</span>

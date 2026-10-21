@@ -1,8 +1,8 @@
 // Library: the quick-reference side of the app.
 (() => {
   const NH = window.NH, { esc, $ } = NH, srs = NH.srs;
-  const SUBS = [['sounds', 'Sounds'], ['kana', 'Kana'], ['phrases', 'Phrases'], ['words', 'Words'], ['kanji', 'Kanji'], ['grammar', 'Grammar']];
-  const st = { sub: NH.store.get('libsub', 'sounds'), script: 'hira', cat: 'All', q: '', lv: 'All' };
+  const SUBS = [['phrasebook', 'Phrasebook'], ['sounds', 'Sounds'], ['kana', 'Kana'], ['phrases', 'Anime'], ['words', 'Words'], ['kanji', 'Kanji'], ['grammar', 'Grammar']];
+  const st = { sub: NH.store.get('libsub', 'phrasebook'), script: 'hira', cat: 'All', q: '', lv: 'All' };
   const fav = new Set(NH.store.get('fav', []));
 
   NH.views.library = {
@@ -12,11 +12,51 @@
       const nav = el.querySelector('.subnav');
       nav.onclick = e => { const b = e.target.closest('button'); if (!b) return; st.sub = b.dataset.s; NH.store.set('libsub', st.sub); NH.draw(); };
       nav.querySelector('.on')?.scrollIntoView({ inline: 'center', block: 'nearest' });
-      ({ sounds, kana, phrases, words, kanji, grammar })[st.sub]($('#lib'));
+      ({ phrasebook, sounds, kana, phrases, words, kanji, grammar })[st.sub]($('#lib'));
     },
   };
+  NH.libGo = sub => { st.sub = sub; NH.store.set('libsub', sub); NH.setTab('library'); };
 
   const row = (say, jp, mid, small, extra = '') => `<li data-say="${esc(say)}"><span class="jp">${esc(jp)}</span><span class="mid"><b>${esc(mid)}</b><small>${esc(small)}</small></span>${extra || '<span class="play">▶</span>'}</li>`;
+
+  // ---------- Phrasebook (everyday situations) ----------
+  const SHORT = { 'e1-manners': 'Manners', 'e1-eat': 'Eating out', 'e1-shop': 'Shopping', 'e1-numbers': 'Time & numbers', 'e2-transport': 'Trains & taxis', 'e2-directions': 'Directions', 'e2-hotel': 'Hotels', 'e2-health': 'Health & SOS', 'e3-people': 'Making friends', 'e3-services': 'Post, bank & phone', 'e3-work': 'Work' };
+  const pbFav = new Set(NH.store.get('pbfav', []));
+  function phrasebook(el) {
+    const all = NH.list.filter(i => i.type === 'vocab' && i.phrase && NH.unitById[i.u]?.track === 'life');
+    const unitIds = Object.keys(SHORT).filter(u => all.some(p => p.u === u));
+    if (!unitIds.includes(st.pb) && st.pb !== 'All' && st.pb !== 'Saved') st.pb = 'All';
+    el.innerHTML = `<p class="hint">Real-life phrases for travel and daily life. Tap to hear one, or tap <b>📣 Show</b> to display it in big letters for staff. ★ saves it to the top.</p>
+      <input id="search" type="search" placeholder="Search phrases (English or Japanese)" value="${esc(st.q)}" autocomplete="off" autocapitalize="off">
+      <div class="chips">${['All', 'Saved', ...unitIds].map(c => `<button class="chip ${c === st.pb ? 'on' : ''}" data-c="${c}">${c === 'Saved' ? '★ Saved' : c === 'All' ? 'All' : SHORT[c]}</button>`).join('')}</div>
+      <div id="pbl"></div>`;
+    const draw = () => {
+      const q = st.q.trim().toLowerCase();
+      const items = all.filter(p => (st.pb === 'All' || (st.pb === 'Saved' ? pbFav.has(p.id) : p.u === st.pb)) && (!q || [p.jp, p.kana, p.rom, p.en].some(f => f.toLowerCase().includes(q))));
+      const byUnit = unitIds.map(u => [u, items.filter(p => p.u === u)]).filter(([, a]) => a.length);
+      $('#pbl').innerHTML = byUnit.length ? byUnit.map(([u, a]) => `<h2>${esc(SHORT[u])}</h2><ul class="phrases">${a.map(p => `<li class="phrase">
+        <button class="say" data-say="${esc(p.kana)}"><span class="jp">${esc(p.jp)}</span><span class="rom">${esc(p.rom)}</span><span class="en">${esc(p.en)}</span></button>
+        <div class="side"><button class="star" data-show="${esc(p.id)}" aria-label="Show to staff" title="Show to staff">📣</button><button class="star ${pbFav.has(p.id) ? 'on' : ''}" data-f="${esc(p.id)}" aria-label="Save">★</button></div></li>`).join('')}</ul>`).join('') : `<p class="empty-msg">${st.pb === 'Saved' ? 'Tap ★ on a phrase to save it here.' : 'No matches.'}</p>`;
+    };
+    draw();
+    $('#search').oninput = e => { st.q = e.target.value; draw(); };
+    el.querySelector('.chips').onclick = e => { const b = e.target.closest('[data-c]'); if (b) { st.pb = b.dataset.c; phrasebook(el); } };
+    $('#pbl').onclick = e => {
+      const sh = e.target.closest('[data-show]'); if (sh) return NH.go('show', { id: sh.dataset.show });
+      const f = e.target.closest('[data-f]');
+      if (f) { const k = f.dataset.f; pbFav.has(k) ? pbFav.delete(k) : pbFav.add(k); NH.store.set('pbfav', [...pbFav]); if (st.pb === 'Saved') draw(); else f.classList.toggle('on'); }
+    };
+  }
+  NH.views.show = {
+    full: true, title: 'Show to staff',
+    render(el, a) {
+      const p = NH.items[a.id];
+      el.innerHTML = `<div class="showcard"><div class="sjp">${esc(p.jp)}</div><div class="sen">${esc(p.en)}</div></div>
+        <button class="big-btn center" id="say">▶ Say it aloud</button>
+        <p class="hint center">Turn the phone around to show the staff member.</p>`;
+      $('#say').onclick = () => NH.speak(p.kana);
+    },
+  };
 
   function sounds(el) {
     el.innerHTML = SOUND_GUIDE.map((s, i) => `
@@ -76,8 +116,8 @@
     };
   }
 
-  const lvChips = () => `<div class="chips">${['All', 1, 2, 3, 4].map(l => `<button class="chip ${String(st.lv) === String(l) ? 'on' : ''}" data-l="${l}">${l === 'All' ? 'All levels' : 'L' + l}</button>`).join('')}</div>`;
-  const lvFilter = i => st.lv === 'All' || i.lv === +st.lv;
+  const lvChips = () => `<div class="chips">${['All', 1, 2, 3, 4, 'E'].map(l => `<button class="chip ${String(st.lv) === String(l) ? 'on' : ''}" data-l="${l}">${l === 'All' ? 'All levels' : l === 'E' ? 'Everyday' : 'L' + l}</button>`).join('')}</div>`;
+  const lvFilter = i => st.lv === 'All' || (st.lv === 'E' ? i.lv >= 11 : i.lv === +st.lv);
 
   function words(el) {
     el.innerHTML = `<input id="search" type="search" placeholder="Search words…" value="${esc(st.q)}" autocapitalize="off" autocomplete="off">${lvChips()}<ul class="rows card" id="wl"></ul>`;
@@ -99,7 +139,7 @@
   }
 
   function grammar(el) {
-    el.innerHTML = `${lvChips()}<ul class="rows card" id="gl">${NH.list.filter(i => i.type === 'grammar' && lvFilter(i)).map(i => `<li data-i="${esc(i.id)}"><span class="mid"><b>${esc(i.title)}</b><small>L${i.lv} · ${esc(i.pat)} — ${esc(i.gist)}</small></span><span class="play">›</span></li>`).join('')}</ul>`;
+    el.innerHTML = `${lvChips()}<ul class="rows card" id="gl">${NH.list.filter(i => i.type === 'grammar' && lvFilter(i)).map(i => `<li data-i="${esc(i.id)}"><span class="mid"><b>${esc(i.title)}</b><small>${NH.tag(i.lv)} · ${esc(i.pat)} — ${esc(i.gist)}</small></span><span class="play">›</span></li>`).join('')}</ul>`;
     el.querySelector('.chips').onclick = e => { const b = e.target.closest('[data-l]'); if (b) { st.lv = b.dataset.l; grammar(el); } };
     $('#gl').onclick = e => { const li = e.target.closest('[data-i]'); if (li) NH.go('item', { id: li.dataset.i }); };
   }

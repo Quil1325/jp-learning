@@ -26,7 +26,12 @@
   })));
 
   // --- vocab ---
-  NH_VOCAB.forEach(v => add({ id: 'v:' + v.jp, type: 'vocab', lv: v.lv, u: v.u, jp: v.jp, kana: v.kana, rom: /^こん(にち|ばん)は$/.test(v.kana) ? NH.romaji(v.kana).replace(/ha$/, 'wa') : NH.romaji(v.kana), en: v.en, ex: v.ex, exEn: v.exEn }));
+  NH_VOCAB.forEach(v => {
+    // "は^" / "へ^" mark particle pronunciation in the source reading; strip for display & speech
+    const romSrc = v.kana.replace(/は\^/g, 'わ').replace(/へ\^/g, 'え').replace(/\^/g, '');
+    const kana = v.kana.replace(/[\^ ]/g, '');
+    add({ id: 'v:' + v.jp, type: 'vocab', lv: v.lv, u: v.u, jp: v.jp, kana, phrase: !!v.phrase, rom: /^こん(にち|ばん)は$/.test(kana) ? NH.romaji(kana).replace(/ha$/, 'wa') : NH.romaji(romSrc), en: v.en, ex: v.ex, exEn: v.exEn });
+  });
 
   // --- kanji ---
   NH_KANJI.forEach(k => {
@@ -100,5 +105,9 @@
   NH.started = items => items.filter(i => srs.stage(i.id) > 0).length;
 
   // Recommended next unit: first unit (in order) with items not yet started
-  NH.nextUnit = () => NH.units.find(u => NH.unitItems(u.id).some(i => !srs.stage(i.id)));
+  NH.nextUnit = (track = 'anime') => NH.units.find(u => (u.track || 'anime') === track && NH.unitItems(u.id).some(i => !srs.stage(i.id)));
+  NH.tag = n => n >= 11 ? 'E' + (n - 10) : 'L' + n;
+  NH.levelLabel = n => n >= 11 ? 'Everyday ' + (n - 10) : 'Level ' + n;
+  NH.levelOf = n => NH.levels.find(l => l.n === n);
+  NH.track = () => NH.profile.track || 'anime';
 })();

@@ -8,7 +8,7 @@
       const done = NH.store.get('read', []);
       el.innerHTML = `<button class="big-btn" id="drill"><span>🎧 Listening drill</span><small>Hear a line, pick what it means — 10 questions from every scene</small></button>
         <p class="hint">Short scenes written for each level. Listen first, read along, then <b>shadow</b> (repeat each line out loud) and save lines you like to your review deck.</p>` +
-        NH.levels.filter(l => NH.dialogues.some(d => d.lv === l.n)).map(l => `<h2>Level ${l.n} · ${esc(l.name)}</h2>` +
+        NH.levels.filter(l => NH.dialogues.some(d => d.lv === l.n)).map(l => `<h2>${NH.levelLabel(l.n)} · ${esc(l.name)}</h2>` +
           NH.dialogues.filter(d => d.lv === l.n).map(d => `<button class="tile wide" data-d="${d.id}"><b>${done.includes(d.id) ? '✅' : '🎧'} ${esc(d.title)}</b><small>${esc(d.blurb)} · ${d.lines.length} lines</small></button>`).join('')).join('');
       $('#drill').onclick = () => NH.startPractice(NH.lineItems(), 'Listening drill', 10);
       el.onclick = e => { const b = e.target.closest('[data-d]'); if (b) NH.go('dialogue', { id: b.dataset.d }); };

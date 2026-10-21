@@ -54,13 +54,14 @@
       const base = { say: item.kana, extra: `<p class="mn"><b>${esc(item.jp)}</b> ${esc(rd)} — ${esc(item.en)}</p>${ex}` };
       const enOpts = [item.en, ...distract(item, x => x.en)];
       const k = s >= 5 ? 5 + (Math.random() * 3 | 0) : s;
-      if (k === 1) return choice(item, { ...base, prompt: item.jp, big: true, sub: rd, answer: item.en, options: enOpts });
+      const bigJp = item.jp.length <= 8;
+      if (k === 1) return choice(item, { ...base, prompt: item.jp, big: bigJp, sub: rd, answer: item.en, options: enOpts });
       if (k === 2) return choice(item, { ...base, prompt: item.en, big: false, sub: 'Which Japanese word?', answer: item.jp, optClass: 'jpopt', options: [item.jp, ...distract(item, x => x.jp)] });
       if (k === 3) return choice(item, { ...base, prompt: '🔊', big: true, sayFirst: true, sub: 'Listen — what does it mean?', answer: item.en, options: enOpts });
-      if (k === 4) return typed(item, { ...base, prompt: item.jp, big: true, sub: `${item.en} — type the reading (romaji or kana)`, answer: item.rom, check: romCheck([item.rom, item.kana, item.jp]) });
+      if (k === 4) return typed(item, { ...base, prompt: item.jp, big: bigJp, sub: `${item.en} — type the reading (romaji or kana)`, answer: item.rom, check: romCheck([item.rom, item.kana, item.jp]) });
       if (k === 5) return typed(item, { ...base, prompt: item.en, big: false, sub: 'Type the Japanese reading (romaji or kana)', answer: item.rom, check: romCheck([item.rom, item.kana, item.jp]) });
       if (k === 6) return typed(item, { ...base, prompt: '🔊', big: true, sayFirst: true, sub: 'Listen — type what you hear (romaji or kana)', answer: item.rom, check: romCheck([item.rom, item.kana, item.jp]) });
-      return typed(item, { ...base, prompt: item.jp, big: true, sub: 'Type the English meaning', answer: item.en, check: enCheck(item.en) });
+      return typed(item, { ...base, prompt: item.jp, big: bigJp, sub: 'Type the English meaning', answer: item.en, check: enCheck(item.en) });
     }
 
     if (T === 'kanji') {
