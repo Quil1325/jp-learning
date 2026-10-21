@@ -1,7 +1,7 @@
 // Network-first so updates arrive when online; falls back to cache offline.
-const CACHE = 'nihongo-v3';
+const CACHE = 'nihongo-v4';
 const ASSETS = ['./', 'index.html', 'style.css', 'data.js', 'core.js', 'content-vocab.js', 'content-vocab2.js',
-  'content-kanji.js', 'content-kanji2.js', 'content-grammar.js', 'content-grammar2.js', 'content-read.js', 'content-path.js', 'content-pitch.js', 'strokes.js', 'catalog.js', 'study.js', 'views-main.js',
+  'content-kanji.js', 'content-kanji2.js', 'content-grammar.js', 'content-grammar2.js', 'content-read.js', 'content-path.js', 'content-pitch.js', 'strokes.js', 'practice.js', 'catalog.js', 'study.js', 'views-main.js',
   'views-lib.js', 'views-read.js', 'views-me.js', 'manifest.webmanifest', 'icons/icon.svg',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 

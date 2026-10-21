@@ -125,10 +125,11 @@
           ${data[c].map(st => `<path d="${st[0]}" class="ghost"/>`).join('')}
           ${data[c].map(st => `<path d="${st[0]}" class="ink" pathLength="1"/>`).join('')}
           ${data[c].map((st, i) => `<text x="${st[1]}" y="${st[2]}" class="num" opacity="0">${i + 1}</text>`).join('')}</svg>`).join('')}</div>
-          <button class="chip">▶ Stroke order</button>`;
+          <div class="btns"><button class="chip play">▶ Stroke order</button><button class="chip prac">✍ Practice</button></div>
+          <div class="practice" hidden></div>`;
         const play = () => {
           let t = 0;
-          box.querySelectorAll('svg').forEach(svg => {
+          box.querySelectorAll('.svgs svg').forEach(svg => {
             svg.querySelectorAll('.ink').forEach(p => { p.getAnimations?.().forEach(a => a.cancel()); p.style.strokeDashoffset = 1; });
             svg.querySelectorAll('.num').forEach(n => n.setAttribute('opacity', '0'));
             const inks = svg.querySelectorAll('.ink'), nums = svg.querySelectorAll('.num');
@@ -139,8 +140,13 @@
             });
           });
         };
-        box.querySelector('button').onclick = play;
-        box.querySelectorAll('svg').forEach(svg => svg.querySelectorAll('.ink').forEach(p => { p.style.strokeDashoffset = 0; }));
+        box.querySelector('.play').onclick = play;
+        const prac = box.querySelector('.practice');
+        box.querySelector('.prac').onclick = e => {
+          const open = prac.hidden; prac.hidden = !open; e.target.textContent = open ? '✕ Close practice' : '✍ Practice';
+          if (open) { NH.practiceInto(prac, chars, data); prac.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } else prac.innerHTML = '';
+        };
+        box.querySelectorAll('.svgs svg').forEach(svg => svg.querySelectorAll('.ink').forEach(p => { p.style.strokeDashoffset = 0; }));
         box.querySelectorAll('.num').forEach(n => n.setAttribute('opacity', '1'));
         setTimeout(play, 300);
       }).catch(() => box.remove());
