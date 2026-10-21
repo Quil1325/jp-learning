@@ -37,6 +37,7 @@
           <label class="field">Speed: <span id="rv">${(NH.profile.rate || 0.9).toFixed(2)}</span>
             <input type="range" id="rate" min="0.5" max="1.1" step="0.05" value="${NH.profile.rate || 0.9}"></label>
           <button class="big-btn ghost center" id="vtest">▶ Test voice (ありがとう、がんばって！)</button>
+          <p class="lead">No sound? Turn the volume up and tap the test button. The app asks iOS to play speech even when the silent switch is on; if it's still silent, flip the switch (side of the phone) to ring.</p>
           <p class="lead">For the best sound on iPhone, install a better voice: <b>Settings → Accessibility → Spoken Content → Voices → Japanese</b>, then download <b>Kyoko (Enhanced)</b> or another “Enhanced / Premium” voice. Pick it here.</p>
         </div>
 
